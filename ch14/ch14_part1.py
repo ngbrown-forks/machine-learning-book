@@ -468,7 +468,7 @@ for i in range(12):
     ax = fig.add_subplot(2, 6, i+1)
     ax.set_xticks([]); ax.set_yticks([])
     img = mnist_test_dataset[i][0][0, :, :]
-    pred = model(img.unsqueeze(0).unsqueeze(1))
+    pred = model(img.unsqueeze(0).unsqueeze(1)) # alternatively: mnist_test_dataset.data[i].float()
     y_pred = torch.argmax(pred)
     ax.imshow(img, cmap='gray_r')
     ax.text(0.9, 0.1, y_pred.item(), 
@@ -478,7 +478,7 @@ for i in range(12):
             transform=ax.transAxes)
     
     
-plt.savefig('figures/14_14.png')
+#plt.savefig('figures/14_14.png')
 plt.show()
 
 

@@ -9,6 +9,7 @@ import torch.nn as nn
 import pandas as pd
 import sklearn
 import sklearn.model_selection
+from packaging import version
 from torch.nn.functional import one_hot
 from torch.utils.data import DataLoader, TensorDataset
 import torchvision 
@@ -100,16 +101,29 @@ train_stats
 
 
 
+
+
 numeric_column_names = ['Cylinders', 'Displacement', 'Horsepower', 'Weight', 'Acceleration']
 
 df_train_norm, df_test_norm = df_train.copy(), df_test.copy()
 
-for col_name in numeric_column_names:
-    mean = train_stats.loc[col_name, 'mean']
-    std  = train_stats.loc[col_name, 'std']
-    df_train_norm.loc[:, col_name] = (df_train_norm.loc[:, col_name] - mean)/std
-    df_test_norm.loc[:, col_name] = (df_test_norm.loc[:, col_name] - mean)/std
-    
+
+if version.parse(pd.__version__) >= version.parse("2.0.0"):
+
+    for col_name in numeric_column_names:
+        mean = train_stats.loc[col_name, 'mean']
+        std = train_stats.loc[col_name, 'std']
+        df_train_norm[col_name] = (df_train_norm[col_name] - mean) / std
+        df_test_norm[col_name] = (df_test_norm[col_name] - mean) / std
+
+else:
+
+    for col_name in numeric_column_names:
+        mean = train_stats.loc[col_name, 'mean']
+        std  = train_stats.loc[col_name, 'std']
+        df_train_norm.loc[:, col_name] = (df_train_norm.loc[:, col_name] - mean) / std
+        df_test_norm.loc[:, col_name] = (df_test_norm.loc[:, col_name] - mean) / std
+        
 df_train_norm.tail()
 
 

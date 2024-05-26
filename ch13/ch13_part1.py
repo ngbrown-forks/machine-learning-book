@@ -211,7 +211,7 @@ l1_penalty = l1_weight * model[2].weight.abs().sum()
 # #### Compiling a model
 # 
 #  * Optimizers `torch.optim`:  https://pytorch.org/docs/stable/optim.html#algorithms
-#  * Loss Functins `tf.keras.losses`: https://pytorch.org/docs/stable/nn.html#loss-functions
+#  * Loss Functions `tf.keras.losses`: https://pytorch.org/docs/stable/nn.html#loss-functions
 
 
 
@@ -363,7 +363,7 @@ plt.plot(history[3], lw=4)
 plt.legend(['Train acc.', 'Validation acc.'], fontsize=15)
 ax.set_xlabel('Epochs', size=15)
 
-plt.savefig('figures/13_04.png', dpi=300)
+#plt.savefig('figures/13_04.png', dpi=300)
 
 
 # ## Making model building more flexible with nn.Module
@@ -437,6 +437,8 @@ ax.set_xlabel(r'$x_1$', size=15)
 ax.xaxis.set_label_coords(1, -0.025)
 ax.set_ylabel(r'$x_2$', size=15)
 ax.yaxis.set_label_coords(-0.025, 1)
+
+#plt.savefig('figures/13_05.png', dpi=300)
 plt.show()
 
 
@@ -569,17 +571,14 @@ ax.set_xlabel(r'$x_1$', size=15)
 ax.xaxis.set_label_coords(1, -0.025)
 ax.set_ylabel(r'$x_2$', size=15)
 ax.yaxis.set_label_coords(-0.025, 1)
+
+#plt.savefig('figures/13_06.png', dpi=300)
 plt.show()
 
 
 # ---
 # 
 # Readers may ignore the next cell.
-
-
-
-
-
 
 
 

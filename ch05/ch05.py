@@ -48,7 +48,7 @@ check_packages(d)
 
 # ### Overview
 
-# - [Unsupervised dimensionality reduction via principal component analysis 128](#Unsupervised-dimensionality-reduction-via-principal-component-analysis-128)
+# - [Unsupervised dimensionality reduction via principal component analysis](#Unsupervised-dimensionality-reduction-via-principal-component-analysis)
 #   - [The main steps behind principal component analysis](#The-main-steps-behind-principal-component-analysis)
 #   - [Extracting the principal components step-by-step](#Extracting-the-principal-components-step-by-step)
 #   - [Total and explained variance](#Total-and-explained-variance)
@@ -111,7 +111,8 @@ df_wine.head()
 
 X, y = df_wine.iloc[:, 1:].values, df_wine.iloc[:, 0].values
 
-X_train, X_test, y_train, y_test =     train_test_split(X, y, test_size=0.3, 
+X_train, X_test, y_train, y_test = \
+    train_test_split(X, y, test_size=0.3, 
                      stratify=y,
                      random_state=0)
 
@@ -130,9 +131,9 @@ X_test_std = sc.transform(X_test)
 # 
 # **Note**
 # 
-# Accidentally, I wrote `X_test_std = sc.fit_transform(X_test)` instead of `X_test_std = sc.transform(X_test)`. In this case, it wouldn't make a big difference since the mean and standard deviation of the test set should be (quite) similar to the training set. However, as remember from Chapter 3, the correct way is to re-use parameters from the training set if we are doing any kind of transformation -- the test set should basically stand for "new, unseen" data.
+# Accidentally, I wrote `X_test_std = sc.fit_transform(X_test)` instead of `X_test_std = sc.transform(X_test)`. In this case, it wouldn't make a big difference since the mean and standard deviation of the test set should be (quite) similar to the training set. However, as you remember from Chapter 3, the correct way is to re-use parameters from the training set if we are doing any kind of transformation -- the test set should basically stand for "new, unseen" data.
 # 
-# My initial typo reflects a common mistake is that some people are *not* re-using these parameters from the model training/building and standardize the new data "from scratch." Here's simple example to explain why this is a problem.
+# My initial typo reflects a common mistake which is that some people are *not* re-using these parameters from the model training/building and standardize the new data "from scratch." Here is a simple example to explain why this is a problem.
 # 
 # Let's assume we have a simple training set consisting of 3 examples with 1 feature (let's call this feature "length"):
 # 
@@ -154,17 +155,17 @@ X_test_std = sc.transform(X_test)
 # - new_5: 6 cm -> class ?
 # - new_6: 7 cm -> class ?
 # 
-# If we look at the "unstandardized "length" values in our training datast, it is intuitive to say that all of these examples are likely belonging to class_2. However, if we standardize these by re-computing standard deviation and and mean you would get similar values as before in the training set and your classifier would (probably incorrectly) classify examples 4 and 5 as class 2.
+# If we look at the "unstandardized "length" values in our training datast, it is intuitive to say that all of these examples are likely belonging to class_2. However, if we standardize these by re-computing standard deviation and mean you would get similar values as before in the training set and your classifier would (probably incorrectly) classify examples 4 and 5 as class_2.
 # 
-# - new_std_4: -1.21 -> class 2
-# - new_std_5: 0 -> class 2
-# - new_std_6: 1.21 -> class 1
+# - new_std_4: -1.21 -> class_2
+# - new_std_5: 0 -> class_2
+# - new_std_6: 1.21 -> class_1
 # 
 # However, if we use the parameters from your "training set standardization," we'd get the values:
 # 
-# - example5: -18.37 -> class 2
-# - example6: -17.15 -> class 2
-# - example7: -15.92 -> class 2
+# - example5: -18.37 -> class_2
+# - example6: -17.15 -> class_2
+# - example7: -15.92 -> class_2
 # 
 # The values 5 cm, 6 cm, and 7 cm are much lower than anything we have seen in the training set previously. Thus, it only makes sense that the standardized features of the "new examples" are much lower than every standardized feature in the training set.
 # 
@@ -273,7 +274,7 @@ plt.show()
 
 # **NOTE**
 # 
-# The following four code cells has been added in addition to the content to the book, to illustrate how to replicate the results from our own PCA implementation in scikit-learn:
+# The following four code cells have been added in addition to the content to the book, to illustrate how to replicate the results from our own PCA implementation in scikit-learn:
 
 
 

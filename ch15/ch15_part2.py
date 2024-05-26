@@ -10,6 +10,8 @@ from torch.utils.data.dataset import random_split
 import re
 from collections import Counter, OrderedDict
 from torchtext.vocab import vocab
+from torchtext import __version__ as torchtext_version
+from pkg_resources import parse_version
 from torch.utils.data import DataLoader
 
 # # Machine Learning with PyTorch and Scikit-Learn  
@@ -67,7 +69,23 @@ check_packages(d)
 
 
 
-# !pip install torchtext
+# pip install torchtext==0.10.0
+
+
+# **Attention**: To reproduce the code in the books, please make sure to use torchtext 0.10.0 (see https://pypi.org/project/torchtext/0.10.0/), which is the package I used for this chapter. 
+# 
+# There are a few adjustments in this notebooks that also make it compatible to newer versions of torchtext.
+
+# For newer versions of torchtext, installing portalocker may be necessary:
+
+
+
+# pip install torchtext
+
+
+
+
+# pip install portalocker
 
 
 
@@ -77,6 +95,8 @@ check_packages(d)
 
 train_dataset = IMDB(split='train')
 test_dataset = IMDB(split='test')
+
+test_dataset = list(test_dataset)   #datapipe to list
 
 torch.manual_seed(1)
 train_dataset, valid_dataset = random_split(
@@ -92,7 +112,8 @@ token_counts = Counter()
 def tokenizer(text):
     text = re.sub('<[^>]*>', '', text)
     emoticons = re.findall('(?::|;|=)(?:-)?(?:\)|\(|D|P)', text.lower())
-    text = re.sub('[\W]+', ' ', text.lower()) +        ' '.join(emoticons).replace('-', '')
+    text = re.sub('[\W]+', ' ', text.lower()) +\
+        ' '.join(emoticons).replace('-', '')
     tokenized = text.split()
     return tokenized
 
@@ -123,13 +144,23 @@ print([vocab[token] for token in ['this', 'is', 'an', 'example']])
 
 
 
+if not torch.cuda.is_available():
+    print("Warning: this code may be very slow on CPU")
+
+
+
+
 ## Step 3-A: define the functions for transformation
 
-device = torch.device("cuda:0")
-# device = 'cpu'
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 text_pipeline = lambda x: [vocab[token] for token in tokenizer(x)]
-label_pipeline = lambda x: 1. if x == 'pos' else 0.
+
+
+if parse_version(torchtext.__version__) > parse_version("0.10"):
+    label_pipeline = lambda x: 1. if x == 2 else 0.         # 1 ~ negative, 2 ~ positive review
+else:
+    label_pipeline = lambda x: 1. if x == 'pos' else 0.
 
 
 ## Step 3-B: wrap the encode and transformation function
@@ -406,6 +437,11 @@ print(f'test_accuracy: {acc_test:.4f}')
 # 
 # Readers may ignore the next cell.
 # 
+
+
+
+
+
 
 
 

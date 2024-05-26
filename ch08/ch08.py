@@ -9,6 +9,7 @@ import time
 import urllib.request
 import pyprind
 import pandas as pd
+from packaging import version
 import numpy as np
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.feature_extraction.text import TfidfTransformer
@@ -84,7 +85,7 @@ check_packages(d)
 # The IMDB movie review set can be downloaded from [http://ai.stanford.edu/~amaas/data/sentiment/](http://ai.stanford.edu/~amaas/data/sentiment/).
 # After downloading the dataset, decompress the files.
 # 
-# A) If you are working with Linux or MacOS X, open a new terminal windowm `cd` into the download directory and execute 
+# A) If you are working with Linux or MacOS X, open a new terminal window, `cd` into the download directory and execute 
 # 
 # `tar -zxf aclImdb_v1.tar.gz`
 # 
@@ -140,13 +141,17 @@ if not os.path.isdir('aclImdb'):
 
 
 
+
 # change the `basepath` to the directory of the
 # unzipped movie dataset
 
 basepath = 'aclImdb'
 
 labels = {'pos': 1, 'neg': 0}
+
+# if the progress bar does not show, change stream=sys.stdout to stream=2
 pbar = pyprind.ProgBar(50000, stream=sys.stdout)
+
 df = pd.DataFrame()
 for s in ('test', 'train'):
     for l in ('pos', 'neg'):
@@ -155,8 +160,14 @@ for s in ('test', 'train'):
             with open(os.path.join(path, file), 
                       'r', encoding='utf-8') as infile:
                 txt = infile.read()
-            df = df.append([[txt, labels[l]]], 
-                           ignore_index=True)
+                
+            if version.parse(pd.__version__) >= version.parse("1.3.2"):
+                x = pd.DataFrame([[txt, labels[l]]], columns=['review', 'sentiment'])
+                df = pd.concat([df, x], ignore_index=False)
+
+            else:
+                df = df.append([[txt, labels[l]]], 
+                               ignore_index=True)
             pbar.update()
 df.columns = ['review', 'sentiment']
 
@@ -166,8 +177,13 @@ df.columns = ['review', 'sentiment']
 
 
 
-np.random.seed(0)
-df = df.reindex(np.random.permutation(df.index))
+
+if version.parse(pd.__version__) >= version.parse("1.3.2"):
+    df = df.sample(frac=1, random_state=0).reset_index(drop=True)
+    
+else:
+    np.random.seed(0)
+    df = df.reindex(np.random.permutation(df.index))
 
 
 # Optional: Saving the assembled data as CSV file:
@@ -233,9 +249,9 @@ bag = count.fit_transform(docs)
 print(count.vocabulary_)
 
 
-# As we can see from executing the preceding command, the vocabulary is stored in a Python dictionary, which maps the unique words that are mapped to integer indices. Next let us print the feature vectors that we just created:
+# As we can see from executing the preceding command, the vocabulary is stored in a Python dictionary, which maps the unique words to integer indices. Next let us print the feature vectors that we just created:
 
-# Each index position in the feature vectors shown here corresponds to the integer values that are stored as dictionary items in the CountVectorizer vocabulary. For example, the  rst feature at index position 0 resembles the count of the word and, which only occurs in the last document, and the word is at index position 1 (the 2nd feature in the document vectors) occurs in all three sentences. Those values in the feature vectors are also called the raw term frequencies: *tf (t,d)*—the number of times a term t occurs in a document *d*.
+# Each index position in the feature vectors shown here corresponds to the integer values that are stored as dictionary items in the CountVectorizer vocabulary. For example, the first feature at index position 0 resembles the count of the word "and", which only occurs in the last document, and the word "is" at index position 1 (the 2nd feature in the document vectors) occurs in all three sentences. Those values in the feature vectors are also called the raw term frequencies: *tf (t,d)*—the number of times a term t occurs in a document *d*.
 
 
 
@@ -250,7 +266,7 @@ print(bag.toarray())
 np.set_printoptions(precision=2)
 
 
-# When we are analyzing text data, we often encounter words that occur across multiple documents from both classes. Those frequently occurring words typically don't contain useful or discriminatory information. In this subsection, we will learn about a useful technique called term frequency-inverse document frequency (tf-idf) that can be used to downweight those frequently occurring words in the feature vectors. The tf-idf can be de ned as the product of the term frequency and the inverse document frequency:
+# When we are analyzing text data, we often encounter words that occur across multiple documents from both classes. Those frequently occurring words typically don't contain useful or discriminatory information. In this subsection, we will learn about a useful technique called term frequency-inverse document frequency (tf-idf) that can be used to downweigh those frequently occurring words in the feature vectors. The tf-idf can be defined as the product of the term frequency and the inverse document frequency:
 # 
 # $$\text{tf-idf}(t,d)=\text{tf (t,d)}\times \text{idf}(t,d)$$
 # 
@@ -273,12 +289,10 @@ print(tfidf.fit_transform(count.fit_transform(docs))
       .toarray())
 
 
-# As we saw in the previous subsection, the word is had the largest term frequency in the 3rd document, being the most frequently occurring word. However, after transforming the same feature vector into tf-idfs, we see that the word is is
-# now associated with a relatively small tf-idf (0.45) in document 3 since it is
-# also contained in documents 1 and 2 and thus is unlikely to contain any useful, discriminatory information.
+# As we saw in the previous subsection, the word "is" had the largest term frequency in the 3rd document, being the most frequently occurring word. However, after transforming the same feature vector into tf-idfs, we see that the word "is" is now associated with a relatively small tf-idf (0.45) in document 3 since it is also contained in documents 1 and 2 and thus is unlikely to contain any useful, discriminatory information.
 # 
 
-# However, if we'd manually calculated the tf-idfs of the individual terms in our feature vectors, we'd have noticed that the `TfidfTransformer` calculates the tf-idfs slightly differently compared to the standard textbook equations that we de ned earlier. The equations for the idf and tf-idf that were implemented in scikit-learn are:
+# However, if we'd manually calculated the tf-idfs of the individual terms in our feature vectors, we'd have noticed that the `TfidfTransformer` calculates the tf-idfs slightly differently compared to the standard textbook equations that we defined earlier. The equations for the idf and tf-idf that were implemented in scikit-learn are:
 
 # $$\text{idf} (t,d) = log\frac{1 + n_d}{1 + \text{df}(d, t)}$$
 # 
@@ -292,10 +306,9 @@ print(tfidf.fit_transform(count.fit_transform(docs))
 # 
 # $$v_{\text{norm}} = \frac{v}{||v||_2} = \frac{v}{\sqrt{v_{1}^{2} + v_{2}^{2} + \dots + v_{n}^{2}}} = \frac{v}{\big (\sum_{i=1}^{n} v_{i}^{2}\big)^\frac{1}{2}}$$
 # 
-# To make sure that we understand how TfidfTransformer works, let us walk
-# through an example and calculate the tf-idf of the word is in the 3rd document.
+# To make sure that we understand how `TfidfTransformer` works, let us walk through an example and calculate the tf-idf of the word "is" in the 3rd document.
 # 
-# The word is has a term frequency of 3 (tf = 3) in document 3 ($d_3$), and the document frequency of this term is 3 since the term is occurs in all three documents (df = 3). Thus, we can calculate the idf as follows:
+# The word "is" has a term frequency of 3 (tf = 3) in document 3 ($d_3$), and the document frequency of this term is 3 since the term "is" occurs in all three documents (df = 3). Thus, we can calculate the idf as follows:
 # 
 # $$\text{idf}("is", d_3) = log \frac{1+3}{1+3} = 0$$
 # 
@@ -312,7 +325,7 @@ tfidf_is = tf_is * (idf_is + 1)
 print(f'tf-idf of term "is" = {tfidf_is:.2f}')
 
 
-# If we repeated these calculations for all terms in the 3rd document, we'd obtain the following tf-idf vectors: [3.39, 3.0, 3.39, 1.29, 1.29, 1.29, 2.0 , 1.69, 1.29]. However, we notice that the values in this feature vector are different from the values that we obtained from the TfidfTransformer that we used previously. The  nal step that we are missing in this tf-idf calculation is the L2-normalization, which can be applied as follows:
+# If we repeated these calculations for all terms in the 3rd document, we'd obtain the following tf-idf vectors: [3.39, 3.0, 3.39, 1.29, 1.29, 1.29, 2.0 , 1.69, 1.29]. However, we notice that the values in this feature vector are different from the values that we obtained from the `TfidfTransformer` that we used previously. The final step that we are missing in this tf-idf calculation is the L2-normalization, which can be applied as follows:
 
 # $$\text{tfi-df}_{norm} = \frac{[3.39, 3.0, 3.39, 1.29, 1.29, 1.29, 2.0 , 1.69, 1.29]}{\sqrt{[3.39^2, 3.0^2, 3.39^2, 1.29^2, 1.29^2, 1.29^2, 2.0^2 , 1.69^2, 1.29^2]}}$$
 # 
@@ -530,7 +543,7 @@ gs = GridSearchCV(lr, {}, cv=cv5_idx, verbose=3).fit(X, y)
 gs.best_score_
 
 
-# As we can see, the result above is consistent with the average score computed the `cross_val_score`.
+# As we can see, the result above is consistent with the average score computed with `cross_val_score`.
 
 
 
@@ -562,7 +575,8 @@ if not os.path.isfile('movie_data.csv'):
               'https://github.com/rasbt/machine-learning-book/'
               'blob/main/ch08/movie_data.csv.gz')
     else:
-        with gzip.open('movie_data.csv.gz', 'rb') as in_f,                 open('movie_data.csv', 'wb') as out_f:
+        with gzip.open('movie_data.csv.gz', 'rb') as in_f, \
+                open('movie_data.csv', 'wb') as out_f:
             out_f.write(in_f.read())
 
 
@@ -580,7 +594,8 @@ stop = stopwords.words('english')
 def tokenizer(text):
     text = re.sub('<[^>]*>', '', text)
     emoticons = re.findall('(?::|;|=)(?:-)?(?:\)|\(|D|P)', text)
-    text = re.sub('[\W]+', ' ', text.lower()) +        ' '.join(emoticons).replace('-', '')
+    text = re.sub('[\W]+', ' ', text.lower()) +\
+        ' '.join(emoticons).replace('-', '')
     tokenized = [w for w in text.split() if w not in stop]
     return tokenized
 

@@ -11,6 +11,7 @@ import torchvision
 from torchvision import transforms 
 from torch.utils.data import DataLoader
 from torch.utils.data import Subset
+import os
 
 # # Machine Learning with PyTorch and Scikit-Learn  
 # # -- Code Examples
@@ -74,7 +75,14 @@ check_packages(d)
 # 2. In addition, **please also make sure you unzip the `img_align_celeba.zip` file, which is inside the `celeba` folder.**
 # 3. Also, after downloading and unzipping the celeba folder, you need to run with the setting `download=False` instead of `download=True` (as shown in the code cell below).
 # 
-# In case you are encountering problems with this approach, please do not hesitate to open a new issue or start a discussion at https://github.com/ rasbt/machine-learning-book so that we can provide you with additional information.
+
+# **For simplicity**, you can also use my link here where I already prepared the directory structure: https://drive.google.com/file/d/1m8-EBPgi5MRubrm6iQjafK2QMHDBMSfJ/view?usp=share_link
+# 
+# Download that zip file and place it in the `celeba` folder. Then unzip `img_align_celeba.zip`. And it should work:
+#     
+# ![](figures/celeba.webp)
+#     
+# In case you are encountering problems with this approach, please do not hesitate to open a new issue or start a discussion at https://github.com/rasbt/machine-learning-book so that we can provide you with additional information.
 
 
 
@@ -189,7 +197,7 @@ plt.show()
 
 
 
-get_smile = lambda attr: attr[18]
+get_smile = lambda attr: attr[31]
  
 transform_train = transforms.Compose([
     transforms.RandomCrop([178, 178]),
@@ -277,11 +285,6 @@ test_dl = DataLoader(celeba_test_dataset, batch_size, shuffle=False)
 
 # ### Training a CNN Smile classifier
 # 
-# * **Global Average Pooling**
-
-
-
-
 
 
 
@@ -461,6 +464,9 @@ plt.show()
 
 
 
+
+if not os.path.exists('models'):
+    os.mkdir('models')
 
 path = 'models/celeba-cnn.ph'
 torch.save(model, path)

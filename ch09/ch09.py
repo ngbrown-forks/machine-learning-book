@@ -388,10 +388,10 @@ print(f'Intercept: {ransac.estimator_.intercept_:.3f}')
 
 
 
-def mean_absolute_deviation(data):
-    return np.mean(np.abs(data - np.mean(data)))
+def median_absolute_deviation(data):
+    return np.median(np.abs(data - np.median(data)))
     
-mean_absolute_deviation(y)
+median_absolute_deviation(y)
 
 
 

@@ -1,13 +1,13 @@
 # coding: utf-8
 
 
-from pkg_resources import parse_version
 import sys
 from python_environment_check import check_packages
 import pytorch_lightning as pl
 import torch 
 import torch.nn as nn 
 from torchmetrics import __version__ as torchmetrics_version
+from pkg_resources import parse_version
 from torchmetrics import Accuracy
 from torch.utils.data import DataLoader
 from torch.utils.data import random_split
@@ -69,13 +69,14 @@ check_packages(d)
 
 
 
+
 class MultiLayerPerceptron(pl.LightningModule):
     def __init__(self, image_shape=(1, 28, 28), hidden_units=(32, 16)):
         super().__init__()
         
         # new PL attributes:
         
-        if parse_version(torchmetrics_version) > parse_version(0.8):
+        if parse_version(torchmetrics_version) > parse_version("0.8"):
             self.train_acc = Accuracy(task="multiclass", num_classes=10)
             self.valid_acc = Accuracy(task="multiclass", num_classes=10)
             self.test_acc = Accuracy(task="multiclass", num_classes=10)
@@ -279,6 +280,11 @@ model = MultiLayerPerceptron.load_from_checkpoint(path)
 # ---
 # 
 # Readers may ignore the next cell.
+
+
+
+
+
 
 
 

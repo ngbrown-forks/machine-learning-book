@@ -408,7 +408,8 @@ def train(model, X_train, y_train, X_valid, y_valid, num_epochs,
             a_h, a_out = model.forward(X_train_mini)
 
             #### Compute gradients ####
-            d_loss__d_w_out, d_loss__d_b_out, d_loss__d_w_h, d_loss__d_b_h =                 model.backward(X_train_mini, a_h, a_out, y_train_mini)
+            d_loss__d_w_out, d_loss__d_b_out, d_loss__d_w_h, d_loss__d_b_h = \
+                model.backward(X_train_mini, a_h, a_out, y_train_mini)
 
             #### Update weights ####
             model.weight_h -= learning_rate * d_loss__d_w_h

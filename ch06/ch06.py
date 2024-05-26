@@ -19,6 +19,7 @@ from sklearn.model_selection import validation_curve
 from sklearn.model_selection import GridSearchCV
 from sklearn.svm import SVC
 from sklearn.model_selection import RandomizedSearchCV
+import scipy.stats
 from sklearn.experimental import enable_halving_search_cv
 from sklearn.model_selection import HalvingRandomSearchCV
 from sklearn.tree import DecisionTreeClassifier
@@ -136,7 +137,8 @@ le.transform(['M', 'B'])
 
 
 
-X_train, X_test, y_train, y_test =     train_test_split(X, y, 
+X_train, X_test, y_train, y_test = \
+    train_test_split(X, y, 
                      test_size=0.20,
                      stratify=y,
                      random_state=1)
@@ -231,7 +233,8 @@ print(f'CV accuracy: {np.mean(scores):.3f} '
 pipe_lr = make_pipeline(StandardScaler(),
                         LogisticRegression(penalty='l2', max_iter=10000))
 
-train_sizes, train_scores, test_scores =                learning_curve(estimator=pipe_lr,
+train_sizes, train_scores, test_scores =\
+                learning_curve(estimator=pipe_lr,
                                X=X_train,
                                y=y_train,
                                train_sizes=np.linspace(0.1, 1.0, 10),
@@ -375,7 +378,7 @@ param_grid = [{'svc__C': param_range,
                'svc__kernel': ['linear']},
               {'svc__C': param_range,
                'svc__gamma': param_range,
-               'svc__kernel': ['rbg']}]
+               'svc__kernel': ['rbf']}]
 
 
 rs = RandomizedSearchCV(estimator=pipe_svc,
@@ -400,6 +403,8 @@ print(rs.best_params_)
 
 
 # ## Exploring hyperparameter configurations more widely with randomized search
+
+
 
 
 
