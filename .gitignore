@@ -1,8 +1,21 @@
 # Datasets and temporary PyTorch files
+ch08/movie_data.csv
+ch08/aclImdb_v1.tar.gz
 ch12/MNIST
 ch12/celeba
 ch12/iris_classifier_state.pt
 ch12/iris_classifier.pt
+ch13/MNIST/
+ch14/celeba/
+ch14/MNIST/
+ch14/models/mnist-cnn.ph
+ch16/movie_data.csv
+ch16/movie_data.csv.gz
+ch14/models/celeba-cnn.ph
+ch17/MNIST/
+ch18/processed/
+ch18/raw/
+ch19/gridworld/q-learning-history.png
 
 # Test Suites
 .coverage*
