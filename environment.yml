@@ -1,5 +1,8 @@
 name: machine-learning-book
 channels:
+  - pytorch
+  - nvidia
+  - pyg
   - conda-forge
   - defaults
 dependencies:
@@ -10,4 +13,17 @@ dependencies:
   - matplotlib=3.4.3
   - scikit-learn=1.0
   - jupyterlab>=3.4.4
+  - pytorch=1.13
+  - pytorch-cuda=11.6
+  - torchaudio=0.13.1
+  - torchvision=0.14.1
+  - pyg=2.5.2
+  - gdown
+  - mlxtend
+  - torchtext
+  - transformers
+  - datasets
+  - networkx=2.6
+  - gym=0.21
+  - pyglet
 prefix: /opt/miniconda3/envs/machine-learning-book
