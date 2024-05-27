@@ -5,4 +5,4 @@ install:
 create:
 	# Required to remove old dependencies due to broken prune after conda 4.4
 	# https://github.com/conda/conda/issues/7279
-	conda env create environment.yml --force
+	conda env create --name pyml-book -f environment.yml
